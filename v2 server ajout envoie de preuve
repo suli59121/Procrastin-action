@@ -1,0 +1,47 @@
+const express = require('express');
+const mysql = require('mysql2');
+const path = require('path');
+const app = express();
+
+// IMPORTANT : Pour que le serveur comprenne quand on lui envoie des données
+app.use(express.json());
+app.use(express.static('public'));
+
+const db = mysql.createConnection({
+    host: 'mysql-telliezsulivan.alwaysdata.net',
+    user: 'telliezsulivan',
+    password: 'Telliez.2005',
+    database: 'telliezsulivan_db'
+});
+
+db.connect(err => {
+    if (err) throw err;
+    console.log('Connecté à MySQL!');
+});
+
+// Servir la page d'accueil
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Récupérer un défi aléatoire
+app.get('/api/challenge', (req, res) => {
+    db.query("SELECT * FROM challenges ORDER BY RAND() LIMIT 1", (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json(result[0]);
+    });
+});
+
+// US-03 : Envoyer une preuve
+app.post('/api/proof', (req, res) => {
+    const { challenge_id, user_id, proof_text } = req.body;
+    const sql = "INSERT INTO proofs (challenge_id, user_id, proof_text) VALUES (?, ?, ?)";
+    db.query(sql, [challenge_id, user_id, proof_text], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json({ message: "Preuve enregistrée !" });
+    });
+});
+
+app.listen(3000, () => {
+    console.log('Serveur lancé sur http://localhost:3000');
+});
