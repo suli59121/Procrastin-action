@@ -1,0 +1,75 @@
+const express = require('express');
+const mysql = require('mysql2');
+const path = require('path');
+const app = express();
+
+// IMPORTANT : Pour que le serveur comprenne quand on lui envoie des données
+app.use(express.json());
+app.use(express.static('public'));
+
+const db = mysql.createConnection({
+    host: 'mysql-telliezsulivan.alwaysdata.net',
+    user: 'telliezsulivan',
+    password: 'Telliez.2005',
+    database: 'telliezsulivan_db'
+});
+
+db.connect(err => {
+    if (err) throw err;
+    console.log('Connecté à MySQL!');
+});
+
+// Servir la page d'accueil
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Récupérer un défi aléatoire
+app.get('/api/challenge', (req, res) => {
+    db.query("SELECT * FROM challenges ORDER BY RAND() LIMIT 1", (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.json(result[0]);
+    });
+});
+
+// US-03 : Envoyer une preuve
+app.post('/api/proof', (req, res) => {
+    const { challenge_id, user_id, proof_text } = req.body;
+
+    // 1. On insère la preuve
+    const sqlProof = "INSERT INTO proofs (challenge_id, user_id, proof_text) VALUES (?, ?, ?)";
+    
+    db.query(sqlProof, [challenge_id, user_id, proof_text], (err) => {
+        if (err) return res.status(500).send(err);
+
+        // 2. On récupère la valeur du défi pour savoir combien de points ajouter
+        db.query("SELECT points_reward FROM challenges WHERE id = ?", [challenge_id], (err, results) => {
+            if (err) return res.status(500).send(err);
+            const pointsToAdd = results[0].points_reward;
+
+            // 3. On met à jour le total de l'utilisateur dans la table 'users'
+            const sqlUpdatePoints = "UPDATE users SET points_total = points_total + ? WHERE id = ?";
+            db.query(sqlUpdatePoints, [pointsToAdd, user_id], (err) => {
+                if (err) return res.status(500).send(err);
+                res.json({ message: "Preuve enregistrée et points ajoutés !", pointsGagnes: pointsToAdd });
+            });
+        });
+    });
+});
+
+// US-05 : Vérifier ou créer un utilisateur au lancement
+app.post('/api/login', (req, res) => {
+    const { username } = req.body;
+    db.query("INSERT IGNORE INTO users (username, points_total) VALUES (?, 0)", [username], (err) => {
+        if (err) return res.status(500).send(err);
+        // On récupère l'ID ET les points
+        db.query("SELECT id, points_total FROM users WHERE username = ?", [username], (err, result) => {
+            if (err) return res.status(500).send(err);
+            res.json(result[0]);
+        });
+    });
+});
+
+app.listen(3000, () => {
+    console.log('Serveur lancé sur http://localhost:3000');
+});
