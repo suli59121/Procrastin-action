@@ -43,15 +43,19 @@
     <div id="boss-mode">
         <h2>Rapport de Performance Trimestriel - Confidentiel</h2>
         <hr>
-        <p>Analyse l'évolution de l'efficacité des employés</p>
-        <table border="1" style="width:100%; border-collapse: collapse;">
-            <tr style="background: #eee;"><th>Poste</th><th>Pourcentage</th><th>État</th></tr>
-            <tr><td>PC-01</td><td>+12.4%</td><td>Augmentation</td></tr>
-            <tr><td>PC-02</td><td>-2.1%</td><td>Légère baisse</td></tr>
-            <tr><td>PC-03</td><td>0%</td><td>Stable</td></tr>
-            <tr><td>PC-04</td><td>-22.41%</td><td>Grosse baisse</td></tr>
-            <tr><td>PC-05</td><td>+2.1%</td><td>Légère augmentation</td></tr>
-            <tr><td>PC-06</td><td>+72.1%</td><td>Grosse augmentation</td></tr>
+        <p>Analyse l'evolution de l'efficacité des employés </p>
+        <table border="1" style="width:100%">
+            <tr><th>post</th><th>pourcentage</th><th>etat</th></tr>
+            <tr><td>pc1</td><td>+12.4%</td><td>augmentation</td></tr>
+            <tr><td>pc2</td><td>-2.1%</td><td>legere baisse</td></tr>
+            <tr><td>pc3</td><td>0%</td><td>stable</td></tr>
+            <tr><td>pc4</td><td>-22.41%</td><td>grosse baisse</td></tr>
+            <tr><td>pc5</td><td>+2.1%</td><td>legere augmentation</td></tr>
+            <tr><td>pc6</td><td>+72.1%</td><td>grosse augmentation</td></tr>
+            <tr><td>pc7</td><td>-0.1%</td><td>stable</td></tr>
+            <tr><td>pc8</td><td>+12.8%</td><td>augmentation</td></tr>
+            <tr><td>pc9</td><td>+7.1%</td><td>legere augmentation</td></tr>
+            <tr><td>pc10</td><td>new</td><td>nouvel employé</td></tr>
         </table>
         <p style="margin-top: 50px; color: gray;">(Appuie sur la touche <b>'P'</b> pour revenir au "travail")</p>
     </div>
