@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procrastin'Action - Version Finale</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f4f9; padding-top: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; max-width: 500px; width: 90%; margin-top: 15px; text-align: left; }
+        h1, h2, h3 { color: #2c3e50; text-align: center; margin-top: 0; }
+        #desc { font-size: 1.2rem; color: #34495e; margin: 20px 0; min-height: 50px; font-weight: bold; text-align: center; }
+        
+        .btn { color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-blue { background: #3498db; } .btn-blue:hover { background: #2980b9; }
+        .btn-green { background: #2ecc71; } .btn-green:hover { background: #27ae60; }
+        .btn-orange { background: #f39c12; font-size: 0.8rem; padding: 5px 10px; width: auto; float: right; }
+        .btn-panic { background: #b1aeae; width: auto; margin-top: 20px; display: inline-block; }
+
+        /* Onglets */
+        .nav-tabs { display: flex; justify-content: center; margin-bottom: 10px; gap: 10px; }
+        .tab { background: #ddd; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .tab.active { background: #2c3e50; color: white; }
+        .page { display: none; } .page.active { display: block; }
+        
+        textarea { width: 100%; border: 1px solid #ddd; border-radius: 5px; padding: 10px; resize: none; margin-bottom: 10px; box-sizing: border-box; font-family: inherit; }
+        .proof-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        #boss-mode { display: none; background: white; position: fixed; top:0; left:0; width:100%; height:100%; z-index: 10000; padding: 50px; text-align: left; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <div id="game-ui">
+        <div class="nav-tabs">
+            <div class="tab active" onclick="switchTab('game')">🎮 Jeu</div>
+            <div class="tab" onclick="switchTab('feed')">🕵️ Preuves & Votes</div>
+            <div class="tab" onclick="switchTab('leaderboard')">🏆 Scores</div>
+        </div>
+
+        <div class="card">
+            <div id="user-info" style="font-size: 0.8rem; color: #7f8c8d; margin-bottom: 15px; text-align: right; border-bottom: 1px solid #eee; padding-bottom: 5px;">Chargement...</div>
+            
+            <div id="page-game" class="page active">
+                <h1>Procrastin'Action</h1>
+                <p style="text-align:center;">Ton défi actuel :</p>
+                <div id="desc">Prêt pour une petite pause ?</div>
+                <button class="btn btn-blue" onclick="getChallenge()">✨ Nouveau Défi</button>
+
+                <div id="proof-section" style="display:none; margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee;">
+                    <textarea id="proofInput" rows="3" placeholder="Raconte ta preuve..."></textarea>
+                    <button class="btn btn-green" onclick="sendProof()">📤 Envoyer ma preuve</button>
+                </div>
+            </div>
+
+            <div id="page-feed" class="page">
+                <h2>Exploits des collègues</h2>
+                <div id="feed-container">En chargement...</div>
+            </div>
+
+            <div id="page-leaderboard" class="page">
+                <h2>Classement Général</h2>
+                <table>
+                    <thead>
+                        <tr><th>Rang</th><th>Joueur</th><th>Points</th></tr>
+                    </thead>
+                    <tbody id="leaderboard-container">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <button class="btn btn-panic" onclick="togglePanic()">⚠️ ALERTE PATRON</button>
+    </div>
+
+     <div id="boss-mode">
+        <h2>Rapport de Performance Trimestriel - Confidentiel</h2>
+        <hr>
+        <p>Analyse l'evolution de l'efficacité des employés </p>
+        <table border="1" style="width:100%">
+            <tr><th>post</th><th>pourcentage</th><th>etat</th></tr>
+            <tr><td>pc1</td><td>+12.4%</td><td>augmentation</td></tr>
+            <tr><td>pc2</td><td>-2.1%</td><td>legere baisse</td></tr>
+            <tr><td>pc3</td><td>0%</td><td>stable</td></tr>
+            <tr><td>pc4</td><td>-22.41%</td><td>grosse baisse</td></tr>
+            <tr><td>pc5</td><td>+2.1%</td><td>legere augmentation</td></tr>
+            <tr><td>pc6</td><td>+72.1%</td><td>grosse augmentation</td></tr>
+            <tr><td>pc7</td><td>-0.1%</td><td>stable</td></tr>
+            <tr><td>pc8</td><td>+12.8%</td><td>augmentation</td></tr>
+            <tr><td>pc9</td><td>+7.1%</td><td>legere augmentation</td></tr>
+            <tr><td>pc10</td><td>new</td><td>nouvel employé</td></tr>
+        </table>
+        <p style="margin-top: 50px; color: gray;">(Appuie sur la touche <b>'P'</b> pour revenir au "travail")</p>
+    </div>
+
+    <script>
+        let currentChallengeId = null;
+        let currentUserId = null;
+        let currentUsername = "";
+
+        async function initApp() {
+            currentUsername = prompt("Entre ton pseudo :");
+            if (!currentUsername) currentUsername = "Anonyme";
+            await refreshUser();
+            loadFeed();
+            loadLeaderboard();
+        }
+
+        async function refreshUser() {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: currentUsername })
+            });
+            const data = await res.json();
+            currentUserId = data.id;
+            document.getElementById('user-info').innerText = `Joueur : ${currentUsername} | Total : ${data.points_total} pts`;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`page-${tabName}`).classList.add('active');
+
+            if(tabName === 'feed') loadFeed();
+            if(tabName === 'leaderboard') loadLeaderboard();
+        }
+
+        async function getChallenge() {
+            const res = await fetch('/api/challenge'); 
+            const data = await res.json();
+            currentChallengeId = data.id;
+            document.getElementById('desc').innerText = `${data.description} (${data.points_reward} pts)`;
+            document.getElementById('proof-section').style.display = 'block';
+            document.getElementById('proofInput').value = ""; 
+        }
+
+        async function sendProof() {
+            const text = document.getElementById('proofInput').value;
+            if (!text.trim()) return alert("Écris une preuve !");
+
+            const response = await fetch('/api/proof', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    challenge_id: currentChallengeId,
+                    user_id: currentUserId,
+                    proof_text: text
+                })
+            });
+
+            if (response.ok) {
+                alert("✅ Preuve publiée ! Points accordés.");
+                document.getElementById('proof-section').style.display = 'none';
+                document.getElementById('desc').innerText = "Défi validé !";
+                await refreshUser();
+            }
+        }
+
+        async function loadFeed() {
+            const res = await fetch('/api/proofs');
+            const data = await res.json();
+            const container = document.getElementById('feed-container');
+            
+            if(data.length === 0) {
+                container.innerHTML = "<p>Aucune preuve envoyée pour le moment.</p>";
+                return;
+            }
+
+            container.innerHTML = data.map(p => `
+                <div class="proof-item">
+                    <button class="btn btn-orange" onclick="voteProof(${p.id})">👍 +1 (${p.votes_count || 0})</button>
+                    <strong>${p.username}</strong><br>
+                    <small style="color:gray;">Défi : ${p.description}</small><br>
+                    <span style="font-style:italic;">"${p.proof_text}"</span>
+                </div>
+            `).join('');
+        }
+
+        async function voteProof(proofId) {
+            await fetch('/api/vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ proof_id: proofId })
+            });
+            loadFeed(); // Recharge le flux immédiatement
+        }
+
+        async function loadLeaderboard() {
+            const res = await fetch('/api/leaderboard');
+            const data = await res.json();
+            const container = document.getElementById('leaderboard-container');
+            
+            container.innerHTML = data.map((u, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${u.points_total}</td>
+                </tr>
+            `).join('');
+        }
+
+        function togglePanic() { document.getElementById('boss-mode').style.display = 'block'; }
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'p') document.getElementById('boss-mode').style.display = 'none';
+        });
+
+        initApp();
+    </script>
+</body>
+</html>
